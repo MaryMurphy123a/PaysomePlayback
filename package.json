@@ -1,0 +1,14 @@
+{
+  "name": "pawsome-playback",
+  "version": "1.0.0",
+  "description": "Cat video sharing platform",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "serve-static": "^1.15.0"
+  }
+}

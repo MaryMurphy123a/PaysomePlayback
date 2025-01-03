@@ -1,0 +1,43 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  nodeVersion: '18.x'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '$(nodeVersion)'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+  displayName: 'Install Dependencies'
+
+- task: CopyFiles@2
+  inputs:
+    Contents: |
+      **/*
+      !node_modules/**
+      !.env
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  displayName: 'Copy Project Files'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+  displayName: 'Create Deployment Package'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+  displayName: 'Publish Build Artifacts'

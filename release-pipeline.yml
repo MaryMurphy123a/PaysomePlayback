@@ -1,0 +1,62 @@
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- name: azureSubscription
+  value: 'Pawsome Playback Connection'
+- name: webAppName
+  value: 'pawsome-playback-app'
+- name: environmentName
+  value: 'production'
+- name: UPLOAD_ENDPOINT
+  value: $(UPLOAD_ENDPOINT)
+- name: RETRIEVE_ENDPOINT
+  value: $(RETRIEVE_ENDPOINT)
+- name: BLOB_ACCOUNT
+  value: $(BLOB_ACCOUNT)
+- name: COMMENT_STORE
+  value: $(COMMENT_STORE)
+- name: COMMENT_RETRIEVE
+  value: $(COMMENT_RETRIEVE)
+- name: RATING_STORE
+  value: $(RATING_STORE)
+- name: RATING_RETRIEVE
+  value: $(RATING_RETRIEVE)
+- name: LANGUAGE_ENDPOINT
+  value: $(LANGUAGE_ENDPOINT)
+- name: LANGUAGE_KEY
+  value: $(LANGUAGE_KEY)
+- name: REDIS_ENDPOINT
+  value: $(REDIS_ENDPOINT)
+- name: REDIS_KEY
+  value: $(REDIS_KEY)
+
+stages:
+- stage: Deploy_Prod
+  displayName: 'Deploy to Production'
+  jobs:
+  - deployment: Deploy
+    environment: production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appName: '$(webAppName)'
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              appSettings: |
+                -UPLOAD_ENDPOINT "$(UPLOAD_ENDPOINT)"
+                -RETRIEVE_ENDPOINT "$(RETRIEVE_ENDPOINT)"
+                -BLOB_ACCOUNT "$(BLOB_ACCOUNT)"
+                -COMMENT_STORE "$(COMMENT_STORE)"
+                -COMMENT_RETRIEVE "$(COMMENT_RETRIEVE)"
+                -RATING_STORE "$(RATING_STORE)"
+                -RATING_RETRIEVE "$(RATING_RETRIEVE)"
+                -LANGUAGE_ENDPOINT "$(LANGUAGE_ENDPOINT)"
+                -LANGUAGE_KEY "$(LANGUAGE_KEY)"
+                -REDIS_ENDPOINT "$(REDIS_ENDPOINT)"
+                -REDIS_KEY "$(REDIS_KEY)"
